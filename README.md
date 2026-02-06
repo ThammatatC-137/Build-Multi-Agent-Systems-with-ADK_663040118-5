@@ -1,102 +1,45 @@
-# 🏛️ Historical Court Agent (ADK Project)
+# 🏛️ Historical Court Agent — README
 
-โปรเจกต์นี้เป็นตัวอย่างการสร้าง Multi-Agent System โดยใช้ **Google ADK (Agent Development Kit)** ร่วมกับเครื่องมือจาก LangChain และ Wikipedia API เพื่อจำลอง “ศาลประวัติศาสตร์” (Historical Court) ที่ให้ Agent หลายตัวช่วยกันค้นหาข้อมูลด้านบวกและด้านลบของบุคคลหรือเหตุการณ์ทางประวัติศาสตร์ แล้วสรุปออกมาเป็นรายงานแบบเป็นกลาง
+## 📌 Overview
 
----
+โปรเจกต์นี้เป็นตัวอย่างการสร้าง **Multi-Agent System** โดยใช้ Google ADK (Agent Development Kit) เพื่อจำลองกระบวนการ “ศาลประวัติศาสตร์” ที่ให้ AI หลาย Agent ทำงานร่วมกันในการค้นหาข้อมูลด้านบวกและด้านลบของบุคคลหรือเหตุการณ์จาก Wikipedia แล้วสรุปออกมาเป็นรายงานแบบเป็นกลาง
 
-## 📌 แนวคิดของระบบ (Concept)
+แนวคิดหลักของโปรเจกต์คือการเรียนรู้การออกแบบ Agent workflow เช่น
 
-ระบบถูกออกแบบให้เหมือนกระบวนการพิจารณาคดีในศาล โดยแบ่งบทบาท Agent ดังนี้
+* Sequential Agent
+* Parallel Agent
+* Loop Agent
+* State Management
 
-* 👤 **Admirer Agent**
-  ค้นหาข้อมูลด้านบวก ความสำเร็จ หรือผลงานสำคัญ
-
-* ⚖️ **Critic Agent**
-  ค้นหาข้อมูลด้านลบ ข้อโต้แย้ง หรือความขัดแย้ง
-
-* 🧑‍⚖️ **Judge Agent**
-  ตรวจสอบความสมดุลของข้อมูล และตัดสินใจว่าจะวนลูปค้นหาต่อหรือไม่
-
-* 📝 **Verdict Writer Agent**
-  สรุปรายงานแบบเป็นกลาง และบันทึกไฟล์ .txt
-
-ระบบใช้รูปแบบการทำงานแบบ:
-
-* `ParallelAgent` → ให้ Admirer กับ Critic ทำงานพร้อมกัน
-* `LoopAgent` → ให้ Judge ตรวจสอบแล้วสั่งวนซ้ำได้
-* `SequentialAgent` → เรียงขั้นตอนตั้งแต่ค้นหา → สรุปผล
+ซึ่งเหมาะสำหรับงานทดลองระดับนักศึกษาปริญญาตรีที่ต้องการเข้าใจระบบ Agent orchestration
 
 ---
 
-## 🧩 โครงสร้างการทำงาน (Workflow)
+## ⚙️ หลักการทำงานของระบบ (How It Works)
 
-```
-User Input
-   ↓
-Root Agent (รับชื่อบุคคล)
-   ↓
-Trial Process (Loop)
-   ├── Admirer Agent (Positive Research)
-   ├── Critic Agent (Negative Research)
-   └── Judge Agent (Decision)
-   ↓
-Verdict Writer
-   ↓
-Output file (.txt)
-```
+โค้ดนี้แบ่งขั้นตอนการทำงานออกเป็น 4 ส่วนหลัก
 
 ---
 
-## ⚙️ เทคโนโลยีที่ใช้
+### 1️⃣ Tools Definition (เครื่องมือ)
 
-* Python
-* Google ADK (Agent Framework)
-* LangChain Tools
-* Wikipedia API
-* Google Cloud Logging
-* dotenv
+ระบบมี Tools ที่ใช้ร่วมกันระหว่าง Agent ได้แก่
 
----
+#### ✅ `append_to_state`
 
-## 📦 การติดตั้ง (Installation)
+ใช้เก็บข้อมูลลงใน state เช่น
 
-1️⃣ Clone repository
+* pos_data → ข้อมูลด้านบวก
+* neg_data → ข้อมูลด้านลบ
+* judge_feedback → คำสั่งจาก Judge
 
-```
-git clone https://github.com/your-username/historical-court-agent.git
-cd historical-court-agent
-```
-
-2️⃣ ติดตั้ง dependencies
-
-```
-pip install -r requirements.txt
-```
-
-3️⃣ สร้างไฟล์ `.env`
-
-```
-MODEL=your_model_name
-```
+หลักการคือ Agent แต่ละตัวจะไม่ส่งข้อมูลตรง ๆ แต่จะบันทึกลง state เพื่อให้ Agent ตัวอื่นนำไปใช้ต่อได้
 
 ---
 
-## ▶️ วิธีใช้งาน (Usage)
+#### ✅ `write_file`
 
-รันโปรแกรมหลัก:
-
-```
-python main.py
-```
-
-จากนั้นระบบจะ:
-
-1. ทักทายผู้ใช้
-2. ขอชื่อบุคคลหรือเหตุการณ์
-3. ให้ Agent ค้นหาข้อมูลทั้งสองด้าน
-4. สรุปผลเป็นรายงาน
-
-ไฟล์ผลลัพธ์จะถูกบันทึกไว้ที่:
+ใช้บันทึกรายงานสุดท้ายเป็นไฟล์ `.txt` ลงในโฟลเดอร์
 
 ```
 court_records/
@@ -104,35 +47,156 @@ court_records/
 
 ---
 
-## 🧠 ตัวอย่าง Input
+#### ✅ Wikipedia Tool
+
+ใช้ LangchainTool เพื่อเรียก Wikipedia API สำหรับค้นหาข้อมูลจริง
+
+---
+
+## 🤖 Agents ภายในระบบ (Historical Court)
+
+---
+
+### 👤 Admirer Agent
+
+หน้าที่:
+
+* ค้นหาข้อมูลด้านบวก
+* ความสำเร็จ
+* ผลงานเด่น
+
+หลักการ:
+
+* ใช้ wikipedia tool
+* บันทึกลง pos_data
+
+---
+
+### ⚖️ Critic Agent
+
+หน้าที่:
+
+* ค้นหาข้อมูลด้านลบ
+* controversy
+* criticism
+* failures
+
+หลักการ:
+
+* ทำงานคู่กับ Admirer แบบขนาน (Parallel)
+
+---
+
+### 🧑‍⚖️ Judge Agent
+
+หน้าที่สำคัญที่สุดใน Loop
+
+* ตรวจสอบว่าข้อมูลสองฝั่งสมดุลหรือยัง
+* ถ้าข้อมูลยังไม่พอ → เขียน feedback ลง judge_feedback
+* ถ้าพอแล้ว → ใช้ exit_loop ออกจาก Loop
+
+นี่คือแนวคิด Decision Agent
+
+---
+
+### 📝 Verdict Writer Agent
+
+หน้าที่:
+
+* อ่าน pos_data และ neg_data
+* เขียนรายงานแบบ Neutral
+* เซฟไฟล์ผลลัพธ์
+
+---
+
+## 🔄 รูปแบบ Execution ของระบบ
+
+ระบบใช้ Agent หลายแบบร่วมกัน
+
+---
+
+### ✅ ParallelAgent
 
 ```
-Napoleon Bonaparte
-Albert Einstein
-World War II
+Admirer + Critic
+```
+
+ทำงานพร้อมกันเพื่อประหยัดเวลา
+
+---
+
+### 🔁 LoopAgent
+
+```
+Investigation → Judge → Investigation → Judge ...
+```
+
+วนลูปได้สูงสุด 4 ครั้ง เพื่อป้องกัน infinite loop
+
+---
+
+### ▶️ SequentialAgent
+
+ลำดับขั้นตอนสุดท้าย:
+
+```
+trial_process → verdict_writer
 ```
 
 ---
 
-## 📁 โครงสร้างไฟล์
+## 🧠 Root Agent (Entry Point)
+
+`historical_court_clerk` คือ Agent หลัก
+
+หน้าที่:
+
+1. ทักทายผู้ใช้
+2. รับชื่อบุคคลหรือเหตุการณ์
+3. บันทึกลง PROMPT
+4. ส่งต่อไปยัง court_system
+
+---
+
+## 📊 Workflow ของระบบ
 
 ```
-project/
-│
-├── main.py
-├── .env
-├── court_records/
-└── README.md
+User Input
+   ↓
+Root Agent
+   ↓
+Parallel Investigation
+   ├── Admirer
+   └── Critic
+   ↓
+Judge Review (Loop)
+   ↓
+Verdict Writer
+   ↓
+Text File Output
 ```
 
 ---
 
-## 🎯 วัตถุประสงค์ของโปรเจกต์
+## 📦 Dependencies
 
-* ศึกษาแนวคิด Multi-Agent System
-* ทดลองใช้ Parallel และ Loop Agent
-* ฝึกการออกแบบ Workflow ของ AI Agents
-* เข้าใจการจัดการ state ระหว่าง agent
+* Python
+* google-adk
+* langchain
+* langchain-community
+* python-dotenv
+* google-cloud-logging
+
+---
+
+---
+
+## 🎯 จุดประสงค์ของโปรเจกต์
+
+* ฝึกออกแบบ Multi-Agent Workflow
+* เข้าใจ Parallel และ Loop Agent
+* เรียนรู้การจัดการ State ใน Agent System
+* ทดลอง Agent Decision Making
 
 ---
 
